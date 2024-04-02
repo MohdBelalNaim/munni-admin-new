@@ -1,13 +1,14 @@
 import React from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { IoMdTrendingUp } from "react-icons/io"
+import { PiClockCountdown } from "react-icons/pi";
 import { database } from "../utils/firebase";
 import { useEffect, useState } from "react";
-import { IoMdTrendingUp } from "react-icons/io";
-import { PiClockCountdown } from "react-icons/pi";
 import { INRFormat } from "../utils/rupees_format";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/toggleSlice";
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,13 @@ const HomePage = () => {
   const [donations, setDonations] = useState([]);
 
   async function getCampaigns() {
-    const data = await getDocs(campaignsRef);
+    const campaignsRef = collection(database, "campaigns");
+    const campaignsQuery = query(
+      campaignsRef,
+      orderBy("raisedAmount", "desc"),
+      limit(5)
+    );
+    const data = await getDocs(campaignsQuery);
     setCampaigns(data.docs);
   }
   async function getDonations() {
@@ -54,24 +61,22 @@ const HomePage = () => {
             </tr>
           </thead>
           <tbody>
-            {campaigns
-              .sort((a, b) => b.data().raisedAmount - a.data().raisedAmount)
-              .slice(0, 5)
-              .map((campaign, index) => {
-                const campaignData = campaign.data();
-                return (
-                  <tr key={index} className="hover:bg-blue-200">
-                    <th>{index + 1}</th>
-                    <td>{campaignData.title}</td>
-                    <td>{campaignData.category}</td>
-                    <td>{INRFormat(campaignData.raisedAmount)}</td>
-                    <td>{INRFormat(campaignData.goalAmount)}</td>
-                  </tr>
-                );
-              })}
+            {campaigns.map((campaign, index) => {
+              const campaignData = campaign.data();
+              return (
+                <tr key={index} className="hover:bg-blue-200">
+                  <th>{index + 1}</th>
+                  <td>{campaignData.title}</td>
+                  <td>{campaignData.category}</td>
+                  <td>{campaignData.raisedAmount}</td>
+                  <td>{campaignData.goalAmount}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
       <div className="text-xl font-bold text-gray-600 mb-5 mt-5 flex items-center gap-3">
         <PiClockCountdown size={22} /> Recent donations
       </div>
