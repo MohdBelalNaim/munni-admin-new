@@ -35,7 +35,7 @@ const ActiveCampaignsPage = () => {
           <div>All campaigns </div>
           <IoReload className="cursor-pointer text-gray-600" />
         </div>
-        <div className="grid grid-cols-3 gap-3 mb-4 py-2">
+        <div className="grid lg:grid-cols-3 gap-3 mb-4 py-2">
           {campaigns.map((item, index) => {
             return (
               <ActiveCampaignCard data={item.data()} key={index} id={item.id} />

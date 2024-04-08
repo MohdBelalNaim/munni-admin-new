@@ -19,7 +19,7 @@ const EditCampaign = () => {;
   const campaignData = location.state?.data;
   const { id } = useParams();
   const { register, handleSubmit } = useForm({
-    defaultValues: campaignData // Set default values using campaignData
+    defaultValues: campaignData 
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,12 +27,10 @@ const EditCampaign = () => {;
   async function updateCampaign(data) {
     setLoading(true);
     try {
-      // Construct the reference to the specific document to update
       const campaignRef = doc(database, "campaigns", id);
-      // Update the document with the new data
       await updateDoc(campaignRef, data);
       setLoading(false);
-      navigate("/campaigns"); // Redirect to campaigns page after successful update
+      navigate("/campaigns"); 
     } catch (error) {
       console.error("Error updating campaign document: ", error);
       setLoading(false);

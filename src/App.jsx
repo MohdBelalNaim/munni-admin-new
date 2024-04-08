@@ -23,6 +23,7 @@ const DonationPage = lazy(() => import("./pages/DonationPage"));
 const RequestsPage = lazy(() => import("./pages/RequestsPage"));
 const UsersPage = lazy(() => import("./pages/UsersPage"));
 const EditCampaign = lazy(() => import("./pages/EditCampaign"));
+const AccountsPage = lazy(() => import("./pages/AccountsPage"));
 
 const App = () => {
   const [sidebarState, setSidebarState] = useState(true);
@@ -59,6 +60,7 @@ const App = () => {
               ></Route>
               <Route path="/edit/:id" element={<EditUserPage />}></Route>
               <Route path="/create" element={<CreateCampaign />}></Route>
+              <Route path="/accounts" element={<AccountsPage />}></Route>
               <Route
                 path="/editCampaign/:id"
                 element={<EditCampaign />}

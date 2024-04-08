@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query } from "firebase/firestore";
+import { database } from "../utils/firebase";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +10,33 @@ const Login = () => {
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [adminCredentials, setAdminCredentials] = useState({});
+
+  useEffect(() => {
+    const fetchAdminCredentials = async () => {
+      const q = query(collection(database, "admin-access"));
+      const querySnapshot = await getDocs(q);
+      const credentials = [];
+      querySnapshot.forEach((doc) => {
+        credentials.push(doc.data());
+      });
+      setAdminCredentials(credentials);
+    };
+    fetchAdminCredentials();
+  }, []);
+
+
   function loginuser(e) {
-    if (e.username == "Admin" && e.password == "Adminpass") {
+    const matchedCredential = adminCredentials.find(
+      (credential) =>
+        credential.username === e.username && credential.password === e.password
+    );
+
+    if (matchedCredential) {
       dispatch(login());
       navigate("/");
       localStorage.setItem("user", "admin");
+      alert("Login successful");
     } else {
       alert("Bad credentials");
     }

@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { MdCampaign, MdDashboard, MdMessage, MdReport } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
 import { FaPlusCircle, FaPowerOff, FaUsers } from "react-icons/fa";
+import { MdGroups } from "react-icons/md";
 
 export const PageRoutes = [
   {
@@ -27,6 +28,12 @@ export const PageRoutes = [
     title: "Campaigns",
     element: lazy(() => import("./pages/DonationPage")),
     icon: <MdCampaign size={24} />,
+  },
+  {
+    path: "/accounts",
+    title: "Accounts",
+    element: lazy(() => import("./pages/AccountsPage")),
+    icon: <MdGroups size={28} />,
   },
   {
     path: "/reports",
