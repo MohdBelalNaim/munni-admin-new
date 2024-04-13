@@ -1,13 +1,26 @@
 import { Link } from "react-router-dom";
 import DeleteConfirmation from "./DeleteConfirmation";
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, deleteDoc } from "firebase/firestore"; 
 import React, { useEffect, useState } from "react";
 import EditCampaign from "../pages/EditCampaign";
 import { database } from "../utils/firebase";
 
-const ActiveCampaignCard = ({ data,id }) => {
-  console.log(data);
+const ActiveCampaignCard = ({ data, id }) => {
   const [deleteButton, setDeleteButton] = useState(false);
+  const handleDelete = async () => {
+    try {
+      const campaignRef = doc(database, "campaigns", id);
+      await deleteDoc(campaignRef);
+      window.location.reload();
+      // After successful deletion, you can perform any additional actions
+      console.log("Campaign deleted successfully");
+    } catch (error) {
+      console.error("Error deleting campaign: ", error);
+    } finally {
+      // Regardless of success or failure, set deleteButton to false
+      setDeleteButton(false);
+    }
+  };
 
   // const ref = collection(database, "donations");
   // const [donations, setDonations] = useState([]);
@@ -20,6 +33,13 @@ const ActiveCampaignCard = ({ data,id }) => {
   //   }
   //   getData();
   // }, []);
+  
+  const truncateTitle = (title) => {
+    if (title.length > 45) {
+      return title.substring(0, 45) + "...";
+    }
+    return title;
+  };
 
   return (
     // <Link to="">
@@ -30,7 +50,7 @@ const ActiveCampaignCard = ({ data,id }) => {
         <img src={data?.url} className="h-[260px] object-cover w-full" alt="" />
 
         <div className="p-4 space-y-3">
-          <div className="">{data?.title}</div>
+          <div className="">{truncateTitle(data?.title)}</div>
           <div className="w-full bg-gray-200 h-1 overflow-hidden">
             <div
               className="h-1 primary"
@@ -54,10 +74,10 @@ const ActiveCampaignCard = ({ data,id }) => {
         <div className="flex flex-row justify-center gap-2 pt-0 p-4">
           <Link
             to={`/editCampaign/${id}`}
-            state={{ data }}  // Pass data as a prop here
+            state={{ data }} // Pass data as a prop here
             className="w-1/2 bg-blue-500 rounded-full text-center cursor-pointer"
           >
-            <button className="py-2 text-white text-lg font-semibold" >
+            <button className="py-2 text-white text-lg font-semibold">
               Edit
             </button>
           </Link>
@@ -72,7 +92,7 @@ const ActiveCampaignCard = ({ data,id }) => {
           </div>
         </div>
       </div>
-      {deleteButton && <DeleteConfirmation />}
+      {deleteButton && <DeleteConfirmation handleDelete={handleDelete}/>}
     </>
     // </Link>
   );

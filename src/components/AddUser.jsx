@@ -6,71 +6,78 @@ import { database } from "../utils/firebase";
 import { toast } from "react-hot-toast";
 import { SpinnerCircular } from "spinners-react";
 
-const AddUser = ({ controller, method }) => {
-  const [add, setAdd] = controller;
+function AddUser() {
+  const [isVisible, setIsVisible] = useState(true);
   const { register, handleSubmit } = useForm();
-  const [adding, setAdding] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function handleData(d) {
-    setAdding(true);
-    const ref = collection(database, "admins");
-    await addDoc(ref, d)
-      .then(() => {
-        toast.success("User added");
-        method();
-        setAdd(false);
-        setAdding(false);
-      })
-      .catch((err) => console.log(err));
-  }
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const docRef = await addDoc(collection(database, "admin-access"), data);
+      console.log("Document written with ID: ", docRef.id);
+      toast.success("User added successfully!");
+      setIsVisible(false); 
+      setLoading(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("An error occurred");
+      setLoading(false);
+    }
+  };
+
   return (
-    <div
+    <>
+    {isVisible && (<div
       className={`fixed bg-black inset-0 z-10 ${style.overlay} grid place-items-center`}
     >
       <div className="w-[32%] bg-white rounded p-4 animate__animated animate__bounceIn">
         <div className="text-xl font-bold mb-3">Add a user</div>
-        <form onSubmit={handleSubmit(handleData)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-3">
             <input
               type="text"
               placeholder="Full name"
               className="border border-gray-200 w-full p-3 rounded-lg"
               {...register("fullName")}
-              required
             />
             <input
               type="text"
               placeholder="Username"
               className="border border-gray-200 w-full p-3 rounded-lg"
               {...register("username")}
-              required
             />
             <input
               type="password"
               placeholder="Password"
               className="border border-gray-200 w-full p-3 rounded-lg"
               {...register("password")}
-              required
             />
-            <button className="bg-black w-full text-white p-2 rounded-lg flex justify-center" disabled={adding}>
-              {adding ? (
-                <SpinnerCircular size={30} color="white" />
-              ) : (
-                "Add user"
-              )}
+            {loading ? (
+            <button disabled  type="submit"
+            className="bg-gray-700 w-full text-white p-2 rounded-lg flex justify-center">
+              Adding
+              <SpinnerCircular color="white" secondaryColor="gray" size={20} />
             </button>
-
-            <div
-              className="text-center cursor-pointer"
-              onClick={() => setAdd(false)}
-            >
-              Close
+          ) : (
+          <button type="submit"
+          className="bg-black w-full text-white p-2 rounded-lg flex justify-center">
+            Add User
+          </button>)}
+            <div>
+              <button
+                type="button"
+                className="text-center cursor-pointer w-full p-2 "
+                onClick={() => setIsVisible(false)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </form>
       </div>
-    </div>
+    </div>)}</>
   );
-};
+}
 
 export default AddUser;
